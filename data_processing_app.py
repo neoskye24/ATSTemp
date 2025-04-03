@@ -286,7 +286,7 @@ def main():
                         india_columns = [
                             'Stage', 'name', 'email', 'phone', 'location',
                             'total_experience', 'annual_salary', 'notice_period',
-                            'position', 'status', 'source', 'Meeting Notes','date'
+                            'position', 'status', 'source', 'Meeting Notes','Date'
                         ]
                         
                         # Keep only India-specific columns
@@ -1393,12 +1393,8 @@ def main():
                             status = ''
                             source = ''
                             job_title = ''
-                            position = ''
                             stage = ''
                             notes = ''
-                            total_experience = ''
-                            notice_period = ''
-                            annual_salary = ''
                             date = ''
 
                             if region == "US":
@@ -1479,9 +1475,6 @@ def main():
                             stage = ''
                             source = ''
                             notes = ''
-                            job_title = ''
-                            salary = ''
-                            us_person = ''
                             date = ''
                             with col1:
                                 name = st.text_input(
@@ -1560,77 +1553,35 @@ def main():
                                         f'backup_before_changes_{timestamp}.csv'
                                     )
                                     df.to_csv(backup_file, index=False)
-
-                                    # Update the dataframe with new values
-                                    df.loc[selected_index, 'name'] = name
-                                    df.loc[selected_index, 'email'] = email
-                                    df.loc[selected_index, 'phone'] = phone
-                                    df.loc[selected_index,
-                                           'location'] = location
-                                    df.loc[selected_index, 'Date'] = date
-                                    df.loc[selected_index,
-                                           'position'] = position
-                                    df.loc[selected_index,
-                                           'job title'] = job_title
-                                    df.loc[selected_index, 'salary'] = salary
-                                    df.loc[selected_index,
-                                           'US Person'] = us_person
-                                    df.loc[selected_index, 'status'] = status
-                                    df.loc[selected_index, 'Stage'] = stage
-                                    df.loc[selected_index, 'source'] = source
-                                    df.loc[selected_index,
-                                           'Meeting Notes'] = notes
-                                    df.loc[
-                                        selected_index,
-                                        'total_experience'] = total_experience
-                                    df.loc[selected_index,
-                                           'notice_period'] = notice_period
-                                    df.loc[selected_index,
-                                           'annual_salary'] = annual_salary
-
+                                    
                                     if region == "US":
                                         df.loc[selected_index, 'name'] = name
                                         df.loc[selected_index, 'email'] = email
                                         df.loc[selected_index, 'phone'] = phone
                                         df.loc[selected_index, 'Date'] = date
-                                        df.loc[selected_index,
-                                               'location'] = location
-                                        #df.loc[selected_index,'job title'] = job_title
-                                        df.loc[selected_index,
-                                               'salary'] = salary
-                                        df.loc[selected_index,
-                                               'US Person'] = us_person
-                                        df.loc[selected_index,
-                                               'status'] = status
+                                        df.loc[selected_index,'location'] = location
+                                        df.loc[selected_index,'job title'] = job_title
+                                        df.loc[selected_index,'salary'] = salary
+                                        df.loc[selected_index,'US Person'] = us_person
+                                        df.loc[selected_index,'status'] = status
                                         df.loc[selected_index, 'Stage'] = stage
-                                        df.loc[selected_index,
-                                               'source'] = source
-                                        df.loc[selected_index,
-                                               'Meeting Notes'] = notes
+                                        df.loc[selected_index,'source'] = source
+                                        df.loc[selected_index,'Meeting Notes'] = notes
 
                                     else:  # India
                                         df.loc[selected_index, 'name'] = name
                                         df.loc[selected_index, 'email'] = email
                                         df.loc[selected_index, 'phone'] = phone
                                         df.loc[selected_index, 'Date'] = date
-                                        df.loc[selected_index,
-                                               'location'] = location
-                                        df.loc[
-                                            selected_index,
-                                            'total_experience'] = total_experience
-                                        df.loc[selected_index,
-                                               'annual_salary'] = annual_salary
-                                        df.loc[selected_index,
-                                               'notice_period'] = notice_period
-                                        df.loc[selected_index,
-                                               'position'] = position
+                                        df.loc[selected_index,'location'] = location
+                                        df.loc[selected_index,'total_experience'] = total_experience
+                                        df.loc[selected_index,'annual_salary'] = annual_salary
+                                        df.loc[selected_index,'notice_period'] = notice_period
+                                        df.loc[selected_index,'position'] = position
                                         df.loc[selected_index, 'Stage'] = stage
-                                        df.loc[selected_index,
-                                               'source'] = source
-                                        df.loc[selected_index,
-                                               'Meeting Notes'] = notes
-                                        df.loc[selected_index,
-                                               'status'] = status
+                                        df.loc[selected_index,'source'] = source
+                                        df.loc[selected_index,'Meeting Notes'] = notes
+                                        df.loc[selected_index,'status'] = status
 
                                     # Save to Modified Data directory
                                     modified_dir = os.path.join(

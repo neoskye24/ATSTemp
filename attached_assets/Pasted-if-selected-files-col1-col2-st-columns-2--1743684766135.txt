@@ -1,0 +1,32 @@
+if selected_files:
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                if st.button(f"Delete Selected Files from {directory}", key=f"delete_{directory}"):
+                                    try:
+                                        for file in selected_files:
+                                            file_path = os.path.join(dir_path, file)
+                                            os.remove(file_path)
+                                        st.success(f"Successfully deleted {len(selected_files)} files from {directory}")
+                                        st.rerun()  # Use experimental_rerun to refresh the app
+                                    except Exception as e:
+                                        st.error(f"Error deleting files: {str(e)}")
+                            with col2:
+                                # Create a single download button that downloads all selected files in a zip archive
+                                if st.button(f"Download Selected Files from {directory}", key=f"download_{directory}"):
+                                    try:
+                                        # Create a zip archive in memory
+                                        zip_buffer = io.BytesIO()
+                                        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+                                            for file in selected_files:
+                                                file_path = os.path.join(dir_path, file)
+                                                zip_file.write(file_path, arcname=file)
+                                        zip_buffer.seek(0)
+                                        st.download_button(
+                                            label="Download ZIP",
+                                            data=zip_buffer,
+                                            file_name=f"{directory}_files.zip",
+                                            mime="application/zip"
+                                        )
+                                        #st.success(f"Successfully prepared zip file containing {len(selected_files)} files from {directory}")
+                                    except Exception as e:
+                                        st.error(f"Error downloading files: {str(e)}")
