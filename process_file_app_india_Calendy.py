@@ -38,6 +38,10 @@ def preprocess_calendly(filepath, country_name="India"):
         # Rename columns according to the mapping
         df.rename(columns=column_mapping, inplace=True)
         
+        # Remove existing source column if present
+        if 'source' in df.columns:
+            df = df.drop(columns=['source'])
+        # Add source column
         df['source'] = f'Calendly_{country_name}'
 
         # Convert date strings in 'Start Date & Time' to datetime and sort by date
