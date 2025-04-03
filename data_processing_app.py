@@ -790,7 +790,7 @@ def main():
             # Get the latest merged India data
             # First check Modified Data directory in database folder
             # Get all relevant directories
-            modified_dir = os.path.join('database', 'Modified Data India')
+            modified_dir = os.path.join('database', 'Modified Data')
             final_dir = os.path.join('database', 'Final India Data')
             merge_dir = os.path.join('database', 'Merge Final India')
 
