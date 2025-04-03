@@ -1,0 +1,131 @@
+entrypoint = "main.py"
+modules = ["python-3.11"]
+
+[nix]
+channel = "stable-24_05"
+
+[unitTest]
+language = "python3"
+
+[gitHubImport]
+requiredFiles = [".replit", "replit.nix"]
+
+[deployment]
+deploymentTarget = "static"
+publicDir = "."
+
+[[ports]]
+localPort = 80
+externalPort = 5000
+
+[[ports]]
+localPort = 3000
+externalPort = 80
+
+[[ports]]
+localPort = 8000
+externalPort = 8000
+
+[[ports]]
+localPort = 8501
+externalPort = 3003
+
+[[ports]]
+localPort = 8502
+externalPort = 3000
+
+[[ports]]
+localPort = 8503
+externalPort = 3001
+
+[[ports]]
+localPort = 8504
+externalPort = 3002
+
+[[ports]]
+localPort = 8505
+externalPort = 4200
+
+[workflows]
+runButton = "Run Data Processing App"
+
+[[workflows.workflow]]
+name = "Run Merge Streamlit"
+author = 25956101
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "streamlit run merge_streamlit.py --server.address=0.0.0.0 --server.port=80 --server.headless=true --server.enableXsrfProtection=false --server.enableCORS=false --server.enableWebsocketCompression=false"
+
+[[workflows.workflow]]
+name = "Run Update Candidate"
+author = 25956101
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "streamlit run update_candidate.py --server.address=0.0.0.0 --server.port=80 --server.headless=true --server.enableXsrfProtection=false --server.enableCORS=false --server.enableWebsocketCompression=false"
+
+[[workflows.workflow]]
+name = "Run Scenario1"
+author = 25956101
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "streamlit run Scenario1.py --server.address=0.0.0.0 --server.port=80 --server.headless=true --server.enableXsrfProtection=false --server.enableCORS=false --server.enableWebsocketCompression=false"
+
+[[workflows.workflow]]
+name = "Run Data Processing"
+author = 25956101
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "streamlit run data_processing_app.py --server.address=0.0.0.0 --server.port=80 --server.headless=true --server.enableXsrfProtection=false --server.enableCORS=false --server.enableWebsocketCompression=false"
+
+[[workflows.workflow]]
+name = "Run India Data Merger"
+author = 25956101
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "streamlit run india_data_merger.py --server.address=0.0.0.0 --server.port=80 --server.headless=true --server.enableXsrfProtection=false --server.enableCORS=false --server.enableWebsocketCompression=false"
+
+[[workflows.workflow]]
+name = "Run India Data Merger App"
+author = 25956101
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "streamlit run merge_india_data_app.py --server.address=0.0.0.0 --server.port=80 --server.headless=true --server.enableXsrfProtection=false --server.enableCORS=false --server.enableWebsocketCompression=false"
+
+[[workflows.workflow]]
+name = "Run Data Processing App"
+author = 25956101
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "streamlit run data_processing_app.py --server.address=0.0.0.0 --server.port=8501 --server.headless=true --server.enableXsrfProtection=false --server.enableCORS=false --server.enableWebsocketCompression=false"
+
+[[workflows.workflow]]
+name = "Run Update Candidate App"
+author = 25956101
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "streamlit run update_candidate.py --server.address=0.0.0.0 --server.port=8502 --server.headless=true --server.enableXsrfProtection=false --server.enableCORS=false --server.enableWebsocketCompression=false"
+
+[[workflows.workflow]]
+name = "Run Data Processing Copy"
+author = 25956101
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "streamlit run \"data_processing_app (copy).py\" --server.address=0.0.0.0 --server.port=8503 --server.headless=true --server.enableXsrfProtection=false --server.enableCORS=false --server.enableWebsocketCompression=false"
