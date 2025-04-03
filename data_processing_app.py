@@ -282,19 +282,15 @@ def main():
                         )
                         final_dataframe_india = merge_duplicates(
                             final_dataframe_india)
-                        # Drop unnecessary columns including US-specific ones
-                        columns_to_drop = [
-                            'profile_url', 'current_company', 'no-show',
-                            'date', 'job title', 'US Person', 'salary',
-                            'active_project', 'project_details',
-                            'current_title', 'US Person', 'salary'
+                        # Define separate column sets for India data
+                        india_columns = [
+                            'Stage', 'name', 'email', 'phone', 'location',
+                            'total_experience', 'annual_salary', 'notice_period',
+                            'position', 'status', 'source', 'Meeting Notes'
                         ]
-                        final_dataframe_india = final_dataframe_india.drop(
-                            [
-                                col for col in columns_to_drop
-                                if col in final_dataframe_india.columns
-                            ],
-                            axis=1)
+                        
+                        # Keep only India-specific columns
+                        final_dataframe_india = final_dataframe_india.reindex(columns=india_columns)
                         final_dataframe_india.index += 1
                         # Insert a new column named "Stage" as the first column, with a default empty value
                         final_dataframe_india.insert(0, "Stage", pd.NA)
@@ -401,17 +397,15 @@ def main():
                         )
                         final_dataframe_US = merge_duplicates(
                             final_dataframe_US)
-                        # Drop unnecessary columns
-                        columns_to_drop = [
-                            'current_title', 'current_company', 'profile_url',
-                            'active_project', 'profile',
-                            'Event Created Date & Time', 'Marked as No-Show','position','total_experience','notice_period','annual_salary'
+                        # Define separate column sets for US data
+                        us_columns = [
+                            'Stage', 'name', 'email', 'phone', 'location',
+                            'job title', 'US Person', 'salary', 'status',
+                            'source', 'Meeting Notes', 'Date'
                         ]
-                        final_dataframe_US = final_dataframe_US.drop([
-                            col for col in columns_to_drop
-                            if col in final_dataframe_US.columns
-                        ],
-                                                                     axis=1)
+                        
+                        # Keep only US-specific columns
+                        final_dataframe_US = final_dataframe_US.reindex(columns=us_columns)
                         final_dataframe_US.index += 1
                         # Insert a new column named "Stage" as the first column, with a default empty value
                         final_dataframe_US.insert(0, "Stage", pd.NA)
