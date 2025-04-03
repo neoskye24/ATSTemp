@@ -17,7 +17,10 @@ def read_file(file_path):
 def preprocess_naukri_data(df):
     """Preprocess Naukri data with standard column mappings"""
     print('preprocess_naukri_data Started')
-    # Standard column mappings for Naukri
+    # Remove existing source column if present
+    if 'source' in df.columns:
+        df = df.drop(columns=['source'])
+    # Add source column
     df['source'] = 'Naukri_India'
 
     # Map standard column names

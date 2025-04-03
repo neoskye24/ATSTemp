@@ -39,6 +39,12 @@ def preprocess_linkedin_india(df):
 
     # Create a copy to avoid modifying the original
     processed_df = df.copy()
+    
+    # Remove existing source column if present
+    if 'source' in processed_df.columns:
+        processed_df = processed_df.drop(columns=['source'])
+    # Add source column
+    processed_df['source'] = 'LinkedIn_India'
 
     # --- Implement name_cols mapping ---
     name_cols = {
