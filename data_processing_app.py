@@ -282,11 +282,12 @@ def main():
                         )
                         final_dataframe_india = merge_duplicates(
                             final_dataframe_india)
-                        # Drop unnecessary columns
+                        # Drop unnecessary columns including US-specific ones
                         columns_to_drop = [
                             'profile_url', 'current_company', 'no-show',
-                            'date', 'salary', 'job title', 'US Person',
-                            'salary', 'active_project', 'project_details'
+                            'date', 'job title', 'US Person', 'salary',
+                            'active_project', 'project_details',
+                            'current_title', 'US Person', 'salary'
                         ]
                         final_dataframe_india = final_dataframe_india.drop(
                             [
