@@ -55,10 +55,16 @@ def main():
     # Sidebar configuration
     with st.sidebar:
         st.header("Configuration")
+
+        # Regular radio for main operations
         operation = st.radio("Select Operation", [
             "Data Processing", "Mass/Individual Records Update",
-            "Candidate Data Update Tool", "Database File Management"
+            "Candidate Data Update Tool"
         ])
+
+        # Separate button for Database Management
+        if st.button("Database File Management", type="secondary"):
+            operation = "Database File Management"
         region = st.radio("Select Region", ["US", "India"])
 
     if operation == "Database File Management":
