@@ -405,7 +405,7 @@ def main():
                         columns_to_drop = [
                             'current_title', 'current_company', 'profile_url',
                             'active_project', 'profile',
-                            'Event Created Date & Time', 'Marked as No-Show'
+                            'Event Created Date & Time', 'Marked as No-Show','position','total_experience','notice_period','annual_salary'
                         ]
                         final_dataframe_US = final_dataframe_US.drop([
                             col for col in columns_to_drop
@@ -924,8 +924,6 @@ def main():
             else:
                 india_df = pd.DataFrame()
                 st.warning("No data files found in any directory")
-
-                st.info(f"Using modified data from: {modified_files[0]}")
             # Display data overview
             st.subheader("Current Data Overview")
             st.dataframe(india_df, use_container_width=True)
