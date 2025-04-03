@@ -55,16 +55,10 @@ def main():
     # Sidebar configuration
     with st.sidebar:
         st.header("Configuration")
-
-        # Regular radio for main operations
         operation = st.radio("Select Operation", [
             "Data Processing", "Mass/Individual Records Update",
-            "Candidate Data Update Tool"
+            "Candidate Data Update Tool", "Database File Management"
         ])
-
-        # Separate button for Database Management
-        if st.button("Database File Management", type="secondary"):
-            operation = "Database File Management"
         region = st.radio("Select Region", ["US", "India"])
 
     if operation == "Database File Management":
@@ -111,7 +105,7 @@ def main():
                                         st.success(
                                             f"Successfully deleted {len(selected_files)} files from {directory}"
                                         )
-                                        st.experimental_rerun(
+                                        st.rerun(
                                         )  # Use experimental_rerun to refresh the app
                                     except Exception as e:
                                         st.error(
@@ -138,9 +132,7 @@ def main():
                                             data=zip_buffer,
                                             file_name=f"{directory}_files.zip",
                                             mime="application/zip")
-                                        st.success(
-                                            f"Successfully prepared zip file containing {len(selected_files)} files from {directory}"
-                                        )
+                                        #st.success(f"Successfully prepared zip file containing {len(selected_files)} files from {directory}")
                                     except Exception as e:
                                         st.error(
                                             f"Error downloading files: {str(e)}"
@@ -847,7 +839,7 @@ def main():
             # Get the latest merged India data
             # First check Modified Data directory in database folder
             # Get all relevant directories
-            modified_dir = os.path.join('database', 'Modified Data India')
+            modified_dir = os.path.join('database', 'Modified Data')
             final_dir = os.path.join('database', 'Final India Data')
             merge_dir = os.path.join('database', 'Merge Final India')
 
