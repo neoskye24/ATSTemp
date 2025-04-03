@@ -292,8 +292,16 @@ def main():
                         # Keep only India-specific columns
                         final_dataframe_india = final_dataframe_india.reindex(columns=india_columns)
                         final_dataframe_india.index += 1
-                        # Insert a new column named "Stage" as the first column, with a default empty value
-                        final_dataframe_india.insert(0, "Stage", pd.NA)
+                        # Only insert Stage column if it doesn't already exist
+                        if 'Stage' not in final_dataframe_india.columns:
+                            final_dataframe_india.insert(0, "Stage", pd.NA)
+                        else:
+                            # If Stage exists but not at first position, reorder columns
+                            cols = final_dataframe_india.columns.tolist()
+                            if cols[0] != 'Stage':
+                                cols.remove('Stage')
+                                cols = ['Stage'] + cols
+                                final_dataframe_india = final_dataframe_india[cols]
                         final_dataframe_india['name'] = final_dataframe_india[
                             "name"].str.title()
                         final_dataframe_india["phone"] = final_dataframe_india[
@@ -407,8 +415,16 @@ def main():
                         # Keep only US-specific columns
                         final_dataframe_US = final_dataframe_US.reindex(columns=us_columns)
                         final_dataframe_US.index += 1
-                        # Insert a new column named "Stage" as the first column, with a default empty value
-                        final_dataframe_US.insert(0, "Stage", pd.NA)
+                        # Only insert Stage column if it doesn't already exist
+                        if 'Stage' not in final_dataframe_US.columns:
+                            final_dataframe_US.insert(0, "Stage", pd.NA)
+                        else:
+                            # If Stage exists but not at first position, reorder columns
+                            cols = final_dataframe_US.columns.tolist()
+                            if cols[0] != 'Stage':
+                                cols.remove('Stage')
+                                cols = ['Stage'] + cols
+                                final_dataframe_US = final_dataframe_US[cols]
                         final_dataframe_US['name'] = final_dataframe_US[
                             "name"].str.title()
                         final_dataframe_US["phone"] = final_dataframe_US[
