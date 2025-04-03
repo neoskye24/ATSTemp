@@ -5,6 +5,7 @@ import io
 import sys
 from datetime import datetime
 
+import zipfile
 from process_file_app_india_LinkedIn import *
 from process_file_app_india_Naukri import *
 from process_file_app_india_Calendy import *
@@ -38,8 +39,8 @@ def load_or_create_data():
         return pd.read_csv(current_file)
     return pd.DataFrame(columns=[
         'Stage', 'name', 'email', 'phone', 'location', 'experience',
-        'position', 'status', 'profile', 'salary', 'declaration',
-        'source', 'file_source',  'date'
+        'position', 'status', 'profile', 'salary', 'declaration', 'source',
+        'file_source', 'date'
     ])
 
 
@@ -66,7 +67,10 @@ def main():
         # Get all directories in database
         database_dir = 'database'
         if os.path.exists(database_dir):
-            directories = [d for d in os.listdir(database_dir) if os.path.isdir(os.path.join(database_dir, d))]
+            directories = [
+                d for d in os.listdir(database_dir)
+                if os.path.isdir(os.path.join(database_dir, d))
+            ]
 
             # Create tabs for each directory
             tabs = st.tabs(directories)
@@ -74,7 +78,10 @@ def main():
             for tab, directory in zip(tabs, directories):
                 with tab:
                     dir_path = os.path.join(database_dir, directory)
-                    files = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
+                    files = [
+                        f for f in os.listdir(dir_path)
+                        if os.path.isfile(os.path.join(dir_path, f))
+                    ]
 
                     if files:
                         st.write(f"Files in {directory}:")
@@ -87,31 +94,51 @@ def main():
                         if selected_files:
                             col1, col2 = st.columns(2)
                             with col1:
-                                if st.button(f"Delete Selected Files from {directory}", key=f"delete_{directory}"):
+                                if st.button(
+                                        f"Delete Selected Files from {directory}",
+                                        key=f"delete_{directory}"):
                                     try:
                                         for file in selected_files:
-                                            file_path = os.path.join(dir_path, file)
+                                            file_path = os.path.join(
+                                                dir_path, file)
                                             os.remove(file_path)
-                                        st.success(f"Successfully deleted {len(selected_files)} files from {directory}")
-                                        st.rerun()
+                                        st.success(
+                                            f"Successfully deleted {len(selected_files)} files from {directory}"
+                                        )
+                                        st.experimental_rerun(
+                                        )  # Use experimental_rerun to refresh the app
                                     except Exception as e:
-                                        st.error(f"Error deleting files: {str(e)}")
+                                        st.error(
+                                            f"Error deleting files: {str(e)}")
                             with col2:
-                                if st.button(f"Download Selected Files from {directory}", key=f"download_{directory}"):
+                                # Create a single download button that downloads all selected files in a zip archive
+                                if st.button(
+                                        f"Download Selected Files from {directory}",
+                                        key=f"download_{directory}"):
                                     try:
-                                        for file in selected_files:
-                                            file_path = os.path.join(dir_path, file)
-                                            with open(file_path, 'rb') as f:
-                                                st.download_button(
-                                                    label=f"Download {file}",
-                                                    data=f,
-                                                    file_name=file,
-                                                    mime='text/csv',
-                                                    key=f"download_button_{directory}_{file}"
-                                                )
+                                        # Create a zip archive in memory
+                                        zip_buffer = io.BytesIO()
+                                        with zipfile.ZipFile(
+                                                zip_buffer, "w", zipfile.
+                                                ZIP_DEFLATED) as zip_file:
+                                            for file in selected_files:
+                                                file_path = os.path.join(
+                                                    dir_path, file)
+                                                zip_file.write(file_path,
+                                                               arcname=file)
+                                        zip_buffer.seek(0)
+                                        st.download_button(
+                                            label="Download ZIP",
+                                            data=zip_buffer,
+                                            file_name=f"{directory}_files.zip",
+                                            mime="application/zip")
+                                        st.success(
+                                            f"Successfully prepared zip file containing {len(selected_files)} files from {directory}"
+                                        )
                                     except Exception as e:
-                                        st.error(f"Error downloading files: {str(e)}")
-
+                                        st.error(
+                                            f"Error downloading files: {str(e)}"
+                                        )
                     else:
                         st.info(f"No files found in {directory}")
         else:
@@ -119,7 +146,9 @@ def main():
 
     elif operation == "Data Processing":
         st.header(f"{region} Data Processing Pipeline")
-        st.text("Please include the Naukri, Linkedin, Calendly and US/India in file name e.g. Linkedin_India.")
+        st.text(
+            "Please include the Naukri, Linkedin, Calendly and US/India in file name e.g. Linkedin_India."
+        )
 
         if region == "US":
             files = st.file_uploader(
@@ -183,7 +212,9 @@ def main():
                                     print('calendly data US is saved')
                                 print('region wise files distributed for US')
                             else:
-                                print(f'Skipping {file.name} - no US identifier in filename')
+                                print(
+                                    f'Skipping {file.name} - no US identifier in filename'
+                                )
                         else:  # India
                             # Only process if file name contains "India" or "india"
                             if 'india' in file_lower:
@@ -202,9 +233,12 @@ def main():
                                     file_path = save_uploaded_file(
                                         file, "Calendly_India")
                                     calendly_files.append(file_path)
-                                print('region wise files distributed for India')
+                                print(
+                                    'region wise files distributed for India')
                             else:
-                                print(f'Skipping {file.name} - no India identifier in filename')
+                                print(
+                                    f'Skipping {file.name} - no India identifier in filename'
+                                )
 
                     if len(naukri_files) > 0:
                         india_dfs_naukri = process_Naukri_india(naukri_files)
@@ -492,27 +526,37 @@ def main():
 
             # Check Modified Data US directory
             if os.path.exists(modified_dir):
-                modified_files = sorted([f for f in os.listdir(modified_dir) if f.endswith('.csv')], reverse=True)
+                modified_files = sorted([
+                    f for f in os.listdir(modified_dir) if f.endswith('.csv')
+                ],
+                                        reverse=True)
                 if modified_files:
-                    latest_modified = os.path.join(modified_dir, modified_files[0])
+                    latest_modified = os.path.join(modified_dir,
+                                                   modified_files[0])
                     try:
                         df_modified = pd.read_csv(latest_modified)
                         dfs_to_concat.append(df_modified)
-                        timestamp = modified_files[0].split('_')[-1].replace('.csv', '')
+                        timestamp = modified_files[0].split('_')[-1].replace(
+                            '.csv', '')
                         latest_timestamps['Modified'] = timestamp
-                        st.info(f"Using modified data from: {modified_files[0]}")
+                        st.info(
+                            f"Using modified data from: {modified_files[0]}")
                     except Exception as e:
                         st.error(f"Error reading modified file: {str(e)}")
 
             # Check Final US Data directory
             if os.path.exists(final_dir):
-                final_files = sorted([f for f in os.listdir(final_dir) if f.endswith('.csv')], reverse=True)
+                final_files = sorted(
+                    [f for f in os.listdir(final_dir) if f.endswith('.csv')],
+                    reverse=True)
                 if final_files:
                     latest_final = os.path.join(final_dir, final_files[0])
                     try:
                         df_final = pd.read_csv(latest_final)
-                        timestamp = final_files[0].split('_')[-1].replace('.csv', '')
-                        if 'Modified' not in latest_timestamps or timestamp > latest_timestamps['Modified']:
+                        timestamp = final_files[0].split('_')[-1].replace(
+                            '.csv', '')
+                        if 'Modified' not in latest_timestamps or timestamp > latest_timestamps[
+                                'Modified']:
                             dfs_to_concat.append(df_final)
                             latest_timestamps['Final'] = timestamp
                             st.info(f"Using final data from: {final_files[0]}")
@@ -521,16 +565,21 @@ def main():
 
             # Check Merge Final US directory
             if os.path.exists(merge_dir):
-                merge_files = sorted([f for f in os.listdir(merge_dir) if f.endswith('.csv')], reverse=True)
+                merge_files = sorted(
+                    [f for f in os.listdir(merge_dir) if f.endswith('.csv')],
+                    reverse=True)
                 if merge_files:
                     latest_merge = os.path.join(merge_dir, merge_files[0])
                     try:
                         df_merge = pd.read_csv(latest_merge)
-                        timestamp = merge_files[0].split('_')[-1].replace('.csv', '')
-                        if all(timestamp > latest_timestamps.get(key, '') for key in latest_timestamps):
+                        timestamp = merge_files[0].split('_')[-1].replace(
+                            '.csv', '')
+                        if all(timestamp > latest_timestamps.get(key, '')
+                               for key in latest_timestamps):
                             dfs_to_concat.append(df_merge)
                             latest_timestamps['Merge'] = timestamp
-                            st.info(f"Using merged data from: {merge_files[0]}")
+                            st.info(
+                                f"Using merged data from: {merge_files[0]}")
                     except Exception as e:
                         st.error(f"Error reading merge file: {str(e)}")
 
@@ -543,13 +592,15 @@ def main():
                 if not os.path.exists(modified_dir):
                     os.makedirs(modified_dir)
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                new_modified_file = os.path.join(modified_dir, f'modified_us_data_{timestamp}.csv')
+                new_modified_file = os.path.join(
+                    modified_dir, f'modified_us_data_{timestamp}.csv')
                 us_df.to_csv(new_modified_file, index=False)
-                st.success(f"Combined data saved to: {os.path.basename(new_modified_file)}")
+                st.success(
+                    f"Combined data saved to: {os.path.basename(new_modified_file)}"
+                )
             else:
                 us_df = pd.DataFrame()
                 st.warning("No data files found in any directory")
-
 
             # Display data overview
 
@@ -790,7 +841,7 @@ def main():
             # Get the latest merged India data
             # First check Modified Data directory in database folder
             # Get all relevant directories
-            modified_dir = os.path.join('database', 'Modified Data')
+            modified_dir = os.path.join('database', 'Modified Data India')
             final_dir = os.path.join('database', 'Final India Data')
             merge_dir = os.path.join('database', 'Merge Final India')
 
@@ -799,27 +850,37 @@ def main():
 
             # Check Modified Data directory
             if os.path.exists(modified_dir):
-                modified_files = sorted([f for f in os.listdir(modified_dir) if f.endswith('.csv')], reverse=True)
+                modified_files = sorted([
+                    f for f in os.listdir(modified_dir) if f.endswith('.csv')
+                ],
+                                        reverse=True)
                 if modified_files:
-                    latest_modified = os.path.join(modified_dir, modified_files[0])
+                    latest_modified = os.path.join(modified_dir,
+                                                   modified_files[0])
                     try:
                         df_modified = pd.read_csv(latest_modified)
                         dfs_to_concat.append(df_modified)
-                        timestamp = modified_files[0].split('_')[-1].replace('.csv', '')
+                        timestamp = modified_files[0].split('_')[-1].replace(
+                            '.csv', '')
                         latest_timestamps['Modified'] = timestamp
-                        st.info(f"Using modified data from: {modified_files[0]}")
+                        st.info(
+                            f"Using modified data from: {modified_files[0]}")
                     except Exception as e:
                         st.error(f"Error reading modified file: {str(e)}")
 
             # Check Final India Data directory
             if os.path.exists(final_dir):
-                final_files = sorted([f for f in os.listdir(final_dir) if f.endswith('.csv')], reverse=True)
+                final_files = sorted(
+                    [f for f in os.listdir(final_dir) if f.endswith('.csv')],
+                    reverse=True)
                 if final_files:
                     latest_final = os.path.join(final_dir, final_files[0])
                     try:
                         df_final = pd.read_csv(latest_final)
-                        timestamp = final_files[0].split('_')[-1].replace('.csv', '')
-                        if 'Modified' not in latest_timestamps or timestamp > latest_timestamps['Modified']:
+                        timestamp = final_files[0].split('_')[-1].replace(
+                            '.csv', '')
+                        if 'Modified' not in latest_timestamps or timestamp > latest_timestamps[
+                                'Modified']:
                             dfs_to_concat.append(df_final)
                             latest_timestamps['Final'] = timestamp
                             st.info(f"Using final data from: {final_files[0]}")
@@ -828,16 +889,21 @@ def main():
 
             # Check Merge Final India directory
             if os.path.exists(merge_dir):
-                merge_files = sorted([f for f in os.listdir(merge_dir) if f.endswith('.csv')], reverse=True)
+                merge_files = sorted(
+                    [f for f in os.listdir(merge_dir) if f.endswith('.csv')],
+                    reverse=True)
                 if merge_files:
                     latest_merge = os.path.join(merge_dir, merge_files[0])
                     try:
                         df_merge = pd.read_csv(latest_merge)
-                        timestamp = merge_files[0].split('_')[-1].replace('.csv', '')
-                        if all(timestamp > latest_timestamps.get(key, '') for key in latest_timestamps):
+                        timestamp = merge_files[0].split('_')[-1].replace(
+                            '.csv', '')
+                        if all(timestamp > latest_timestamps.get(key, '')
+                               for key in latest_timestamps):
                             dfs_to_concat.append(df_merge)
                             latest_timestamps['Merge'] = timestamp
-                            st.info(f"Using merged data from: {merge_files[0]}")
+                            st.info(
+                                f"Using merged data from: {merge_files[0]}")
                     except Exception as e:
                         st.error(f"Error reading merge file: {str(e)}")
 
@@ -850,9 +916,12 @@ def main():
                 if not os.path.exists(modified_dir):
                     os.makedirs(modified_dir)
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                new_modified_file = os.path.join(modified_dir, f'modified_india_data_{timestamp}.csv')
+                new_modified_file = os.path.join(
+                    modified_dir, f'modified_india_data_{timestamp}.csv')
                 india_df.to_csv(new_modified_file, index=False)
-                st.success(f"Combined data saved to: {os.path.basename(new_modified_file)}")
+                st.success(
+                    f"Combined data saved to: {os.path.basename(new_modified_file)}"
+                )
             else:
                 india_df = pd.DataFrame()
                 st.warning("No data files found in any directory")
@@ -974,7 +1043,8 @@ def main():
                             # Update existing record
                             idx = existing_record.index[0]
                             for col in india_df.columns:
-                                if pd.notna(row[col]):  # Only update non-null values
+                                if pd.notna(row[col]
+                                            ):  # Only update non-null values
                                     india_df.loc[idx, col] = row[col]
                             updates += 1
                         else:
@@ -1321,7 +1391,7 @@ def main():
                             total_experience = ''
                             notice_period = ''
                             annual_salary = ''
-                            date=''
+                            date = ''
 
                             if region == "US":
                                 with col1:
@@ -1359,7 +1429,12 @@ def main():
                                         selected_candidate.get(
                                             'job title', ''))
                                     stage_options = [
-                                        "Call Stage", "Scheduled", "Rejected", "Interview Stage", "Backed Out", "No Response", "Technical Round", "Technical Test", "Review Pending", "Pending Hire", "Sent Offer", "Hired","Joined"
+                                        "Call Stage", "Scheduled", "Rejected",
+                                        "Interview Stage", "Backed Out",
+                                        "No Response", "Technical Round",
+                                        "Technical Test", "Review Pending",
+                                        "Pending Hire", "Sent Offer", "Hired",
+                                        "Joined"
                                     ]
                                     current_stage = selected_candidate.get(
                                         'Stage', 'Call Stage')
@@ -1371,7 +1446,9 @@ def main():
                                         in stage_options else 0)
 
                                 with col4:
-                                    date=st.text_input("Date", selected_candidate.get('Date', ''))
+                                    date = st.text_input(
+                                        "Date",
+                                        selected_candidate.get('Date', ''))
                                     notes = st.text_area(
                                         "Meeting Notes",
                                         selected_candidate.get(
@@ -1397,7 +1474,7 @@ def main():
                             job_title = ''
                             salary = ''
                             us_person = ''
-                            date=''
+                            date = ''
                             with col1:
                                 name = st.text_input(
                                     "Name", selected_candidate.get('name', ''))
@@ -1433,7 +1510,12 @@ def main():
                                     "Position",
                                     selected_candidate.get('position', ''))
                                 stage_options = [
-                                    "Call Stage", "Scheduled", "Rejected", "Interview Stage", "Backed Out", "No Response", "Technical Round", "Technical Test", "Review Pending", "Pending Hire", "Sent Offer", "Hired","Joined"
+                                    "Call Stage", "Scheduled", "Rejected",
+                                    "Interview Stage", "Backed Out",
+                                    "No Response", "Technical Round",
+                                    "Technical Test", "Review Pending",
+                                    "Pending Hire", "Sent Offer", "Hired",
+                                    "Joined"
                                 ]
                                 current_stage = selected_candidate.get(
                                     'Stage', 'Call Stage')
@@ -1447,7 +1529,8 @@ def main():
                                 source = st.text_input(
                                     "Source",
                                     selected_candidate.get('source', ''))
-                                date=st.text_input("Date", selected_candidate.get('Date', ''))
+                                date = st.text_input(
+                                    "Date", selected_candidate.get('Date', ''))
                                 notes = st.text_area(
                                     " Meeting Notes",
                                     selected_candidate.get(
@@ -1501,11 +1584,12 @@ def main():
                                         df.loc[selected_index, 'name'] = name
                                         df.loc[selected_index, 'email'] = email
                                         df.loc[selected_index, 'phone'] = phone
-                                        df.loc[selected_index,'Date']=date
+                                        df.loc[selected_index, 'Date'] = date
                                         df.loc[selected_index,
                                                'location'] = location
                                         #df.loc[selected_index,'job title'] = job_title
-                                        df.loc[selected_index,'salary'] = salary
+                                        df.loc[selected_index,
+                                               'salary'] = salary
                                         df.loc[selected_index,
                                                'US Person'] = us_person
                                         df.loc[selected_index,
