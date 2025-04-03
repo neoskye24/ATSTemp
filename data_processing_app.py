@@ -105,38 +105,33 @@ def main():
                                         st.success(
                                             f"Successfully deleted {len(selected_files)} files from {directory}"
                                         )
-                                        st.rerun(
-                                        )  # Use experimental_rerun to refresh the app
+                                        st.rerun()
                                     except Exception as e:
                                         st.error(
                                             f"Error deleting files: {str(e)}")
                             with col2:
-                                # Create a single download button that downloads all selected files in a zip archive
-                                if st.button(
+                                try:
+                                    # Create a zip archive in memory
+                                    zip_buffer = io.BytesIO()
+                                    with zipfile.ZipFile(
+                                            zip_buffer, "w",
+                                            zipfile.ZIP_DEFLATED) as zip_file:
+                                        for file in selected_files:
+                                            file_path = os.path.join(
+                                                dir_path, file)
+                                            zip_file.write(file_path,
+                                                           arcname=file)
+                                    zip_buffer.seek(0)
+                                    st.download_button(
+                                        label=
                                         f"Download Selected Files from {directory}",
-                                        key=f"download_{directory}"):
-                                    try:
-                                        # Create a zip archive in memory
-                                        zip_buffer = io.BytesIO()
-                                        with zipfile.ZipFile(
-                                                zip_buffer, "w", zipfile.
-                                                ZIP_DEFLATED) as zip_file:
-                                            for file in selected_files:
-                                                file_path = os.path.join(
-                                                    dir_path, file)
-                                                zip_file.write(file_path,
-                                                               arcname=file)
-                                        zip_buffer.seek(0)
-                                        st.download_button(
-                                            label="Download ZIP",
-                                            data=zip_buffer,
-                                            file_name=f"{directory}_files.zip",
-                                            mime="application/zip")
-                                        #st.success(f"Successfully prepared zip file containing {len(selected_files)} files from {directory}")
-                                    except Exception as e:
-                                        st.error(
-                                            f"Error downloading files: {str(e)}"
-                                        )
+                                        data=zip_buffer,
+                                        file_name=f"{directory}_files.zip",
+                                        mime="application/zip",
+                                        key=f"download_{directory}")
+                                except Exception as e:
+                                    st.error(
+                                        f"Error preparing download: {str(e)}")
                     else:
                         st.info(f"No files found in {directory}")
         else:
@@ -285,12 +280,14 @@ def main():
                         # Define separate column sets for India data
                         india_columns = [
                             'Stage', 'name', 'email', 'phone', 'location',
-                            'total_experience', 'annual_salary', 'notice_period',
-                            'position', 'status', 'source', 'Meeting Notes','Date'
+                            'total_experience', 'annual_salary',
+                            'notice_period', 'position', 'status', 'source',
+                            'Meeting Notes', 'Date'
                         ]
-                        
+
                         # Keep only India-specific columns
-                        final_dataframe_india = final_dataframe_india.reindex(columns=india_columns)
+                        final_dataframe_india = final_dataframe_india.reindex(
+                            columns=india_columns)
                         final_dataframe_india.index += 1
                         # Only insert Stage column if it doesn't already exist
                         if 'Stage' not in final_dataframe_india.columns:
@@ -301,7 +298,8 @@ def main():
                             if cols[0] != 'Stage':
                                 cols.remove('Stage')
                                 cols = ['Stage'] + cols
-                                final_dataframe_india = final_dataframe_india[cols]
+                                final_dataframe_india = final_dataframe_india[
+                                    cols]
                         final_dataframe_india['name'] = final_dataframe_india[
                             "name"].str.title()
                         final_dataframe_india["phone"] = final_dataframe_india[
@@ -411,9 +409,10 @@ def main():
                             'job title', 'US Person', 'salary', 'status',
                             'source', 'Meeting Notes', 'Date'
                         ]
-                        
+
                         # Keep only US-specific columns
-                        final_dataframe_US = final_dataframe_US.reindex(columns=us_columns)
+                        final_dataframe_US = final_dataframe_US.reindex(
+                            columns=us_columns)
                         final_dataframe_US.index += 1
                         # Only insert Stage column if it doesn't already exist
                         if 'Stage' not in final_dataframe_US.columns:
@@ -778,8 +777,8 @@ def main():
 
                     # Keep only the latest 5 modified files
                     modified_files = sorted([
-                        f
-                        for f in os.listdir(modified_dir) if f.endswith('.csv')
+                        f for f in os.listdir(modified_dir)
+                        if f.endswith('..csv')
                     ],
                                             reverse=True)
                     if len(modified_files) > 5:
@@ -1142,6 +1141,44 @@ def main():
 
                 except Exception as e:
                     st.error(f"Error processing file: {str(e)}")
+
+                    # Process each row
+                    updates = 0
+                    additions = 0
+                    for _, row in new_df.iterrows():
+                        # Check if record exists (by email or phone)
+                        existing_record = india_df[
+                            (india_df['email'] == row['email']) |
+                            (india_df['phone'] == row['phone'])]
+
+                        if len(existing_record) > 0:
+                            # Update existing record
+                            idx = existing_record.index[0]
+                            for col in india_df.columns:
+                                if pd.notna(row[col]
+                                            ):  # Only update non-null values
+                                    india_df.loc[idx, col] = row[col]
+                            updates += 1
+                        else:
+                            # Add new record
+                            india_df.loc[len(india_df)] = row
+                            additions += 1
+
+                    # Save updated data
+                    india_df.to_csv('merged_india_data.csv', index=False)
+
+                    # Create backup
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    backup_dir = os.path.join('database', timestamp)
+                    os.makedirs(backup_dir, exist_ok=True)
+                    backup_path = os.path.join(backup_dir,
+                                               'merged_india_data.csv')
+                    india_df.to_csv(backup_path, index=False)
+
+                    st.success(f"Successfully processed the file:\n"
+                               f"- Updated {updates} existing records\n"
+                               f"- Added {additions} new records\n"
+                               f"Backup created in {backup_dir}")
     else:
         st.title("Candidate Data Update Tool")
         st.subheader("Update Individual Candidate Records")
@@ -1302,7 +1339,10 @@ def main():
                     if merged_files:
                         latest_file = os.path.join(merge_dir, merged_files[0])
                         df = pd.read_csv(latest_file)
-                        df=df.drop(['position','total_experience','notice_period','annual_salary'])
+                        df = df.drop([
+                            'position', 'total_experience', 'notice_period',
+                            'annual_salary'
+                        ])
                         st.info(
                             f"Loaded latest data from Merge Final US: {merged_files[0]}"
                         )
@@ -1553,35 +1593,51 @@ def main():
                                         f'backup_before_changes_{timestamp}.csv'
                                     )
                                     df.to_csv(backup_file, index=False)
-                                    
+
                                     if region == "US":
                                         df.loc[selected_index, 'name'] = name
                                         df.loc[selected_index, 'email'] = email
                                         df.loc[selected_index, 'phone'] = phone
                                         df.loc[selected_index, 'Date'] = date
-                                        df.loc[selected_index,'location'] = location
-                                        df.loc[selected_index,'job title'] = job_title
-                                        df.loc[selected_index,'salary'] = salary
-                                        df.loc[selected_index,'US Person'] = us_person
-                                        df.loc[selected_index,'status'] = status
+                                        df.loc[selected_index,
+                                               'location'] = location
+                                        df.loc[selected_index,
+                                               'job title'] = job_title
+                                        df.loc[selected_index,
+                                               'salary'] = salary
+                                        df.loc[selected_index,
+                                               'US Person'] = us_person
+                                        df.loc[selected_index,
+                                               'status'] = status
                                         df.loc[selected_index, 'Stage'] = stage
-                                        df.loc[selected_index,'source'] = source
-                                        df.loc[selected_index,'Meeting Notes'] = notes
+                                        df.loc[selected_index,
+                                               'source'] = source
+                                        df.loc[selected_index,
+                                               'Meeting Notes'] = notes
 
                                     else:  # India
                                         df.loc[selected_index, 'name'] = name
                                         df.loc[selected_index, 'email'] = email
                                         df.loc[selected_index, 'phone'] = phone
                                         df.loc[selected_index, 'Date'] = date
-                                        df.loc[selected_index,'location'] = location
-                                        df.loc[selected_index,'total_experience'] = total_experience
-                                        df.loc[selected_index,'annual_salary'] = annual_salary
-                                        df.loc[selected_index,'notice_period'] = notice_period
-                                        df.loc[selected_index,'position'] = position
+                                        df.loc[selected_index,
+                                               'location'] = location
+                                        df.loc[
+                                            selected_index,
+                                            'total_experience'] = total_experience
+                                        df.loc[selected_index,
+                                               'annual_salary'] = annual_salary
+                                        df.loc[selected_index,
+                                               'notice_period'] = notice_period
+                                        df.loc[selected_index,
+                                               'position'] = position
                                         df.loc[selected_index, 'Stage'] = stage
-                                        df.loc[selected_index,'source'] = source
-                                        df.loc[selected_index,'Meeting Notes'] = notes
-                                        df.loc[selected_index,'status'] = status
+                                        df.loc[selected_index,
+                                               'source'] = source
+                                        df.loc[selected_index,
+                                               'Meeting Notes'] = notes
+                                        df.loc[selected_index,
+                                               'status'] = status
 
                                     # Save to Modified Data directory
                                     modified_dir = os.path.join(
