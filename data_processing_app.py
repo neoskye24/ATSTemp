@@ -286,7 +286,7 @@ def main():
                         india_columns = [
                             'Stage', 'name', 'email', 'phone', 'location',
                             'total_experience', 'annual_salary', 'notice_period',
-                            'position', 'status', 'source', 'Meeting Notes'
+                            'position', 'status', 'source', 'Meeting Notes','date'
                         ]
                         
                         # Keep only India-specific columns
