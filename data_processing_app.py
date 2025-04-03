@@ -1302,6 +1302,7 @@ def main():
                     if merged_files:
                         latest_file = os.path.join(merge_dir, merged_files[0])
                         df = pd.read_csv(latest_file)
+                        df=df.drop(['position','total_experience','notice_period','annual_salary'])
                         st.info(
                             f"Loaded latest data from Merge Final US: {merged_files[0]}"
                         )
