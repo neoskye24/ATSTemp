@@ -121,7 +121,7 @@ calendly_mapping = {
     'date': ['date', 'appointment date'],
     'profile_url': ['profile', 'profile url'],
     'salary': ['salary'],  # Calendly data already has 'salary'
-    'declaration': ['declaration', 'notice period/ availability to join'],
+    'notice_period': ['notice period/ availability to join', 'declaration'],
     'position': ['position', 'job title'],
     'no_show': ['no-show', 'no_show'],
     'source': ['source','Source'],
