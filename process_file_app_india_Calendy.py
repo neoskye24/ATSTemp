@@ -212,7 +212,7 @@ def process_L_N_C(india_dfs_calendly, india_dfs_L_N):
 
     # --- Create additional columns based on equivalences ---
     # annual_salary is same as salary: create a duplicate column
-    merged_df["annual_salary"] = merged_df["salary"]
+    merged_df["annual_salary"] = merged_df["annual_salary"]
 
     # notice_period is same as declaration: duplicate that column
     merged_df["notice_period"] = merged_df["notice_period"]
