@@ -21,10 +21,10 @@ def extract_parentheses(text):
     print('extract_parentheses Started')
     if pd.isna(text):
         return ('', '')
-    
+
     # Convert any numeric values to string first
     text = str(text).strip()
-    
+
     match = re.search(r'\((.*?)\)', text)
     if match:
         main_text = text.split('(')[0].strip()
@@ -126,22 +126,24 @@ def preprocess_linkedin_india(df):
         )
         print("Mapped 'active_project' to 'position'")
 
-    # if 'Notes' in processed_df.columns or 'notes' in processed_df.columns:
-    #     notes_col = 'Notes' if 'Notes' in processed_df.columns else 'notes'
-    #     # Extract text after the first colon, remove leading/trailing whitespace
-    #     # processed_df[notes_col] = processed_df[notes_col].str.split(':', 1).str[1].str.strip()
-    #     processed_df[notes_col] = processed_df[notes_col].str.split(":", n=1).str[1].str.strip()
     # Check for the Notes column
     if 'Notes' in processed_df.columns or 'notes' in processed_df.columns:
         notes_col = 'Notes' if 'Notes' in processed_df.columns else 'notes'
 
         def extract_after_colon(note):
-            # Split the string on the pipe character
-            parts = note.split('|')
-            # For each part, if a colon exists, take the text after it
-            extracted = [p.split(':', 1)[1].strip() for p in parts if ':' in p]
-            # Join the extracted parts with a pipe (or any separator you prefer)
-            return '|'.join(extracted)
+            if pd.isna(note):
+                return ''
+            try:
+                # Convert to string and split on pipe character
+                note_str = str(note)
+                parts = note_str.split('|')
+                # For each part, if a colon exists, take the text after it
+                extracted = [p.split(':', 1)[1].strip() for p in parts if ':' in p]
+                # Join the extracted parts with a pipe
+                return '|'.join(extracted)
+            except Exception as e:
+                print(f"Error processing note: {e}")
+                return str(note)
 
         processed_df[notes_col] = processed_df[notes_col].apply(
             extract_after_colon)
