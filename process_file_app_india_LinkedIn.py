@@ -66,7 +66,7 @@ def preprocess_linkedin_india(df):
         print("  Combined first_name and last_name into name column")
 
     # Define the expected column structure for LinkedIn India
-    expected_cols = ['first_name', 'last_name', 'location', 'current_title','current_company', 'email', 'phone', 'profile_url', 'active_project','notes','annual_salary']
+    expected_cols = ['first_name', 'last_name', 'location', 'current_title','current_company', 'email', 'phone', 'profile_url', 'active_project','notes']
 
     # Check if columns are unnamed (like "Unnamed: 0", "Unnamed: 1", etc.)
     unnamed_pattern = any(col.startswith('Unnamed:') for col in processed_df.columns)

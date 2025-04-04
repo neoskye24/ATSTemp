@@ -1513,13 +1513,7 @@ def main():
                                         selected_candidate.get(
                                             'job title', ''))
                                     stage_options = [
-                                        "Call Stage", "Scheduled", "Rejected",
-                                        "Interview Stage", "Backed Out",
-                                        "No Response", "Technical Round",
-                                        "Technical Test", "Review Pending",
-                                        "Pending Hire", "Sent Offer", "Hired",
-                                        "Joined"
-                                    ]
+                                        "Call", "Interview", "Rejected","Backed out", "No response","Technical","In Review", "Offer","Joined", "Sourced", "Hired"]
                                     current_stage = selected_candidate.get(
                                         'Stage', 'Call Stage')
                                     stage = st.selectbox(
@@ -1591,13 +1585,7 @@ def main():
                                     "Position",
                                     selected_candidate.get('position', ''))
                                 stage_options = [
-                                    "Call Stage", "Scheduled", "Rejected",
-                                    "Interview Stage", "Backed Out",
-                                    "No Response", "Technical Round",
-                                    "Technical Test", "Review Pending",
-                                    "Pending Hire", "Sent Offer", "Hired",
-                                    "Joined"
-                                ]
+                                    "Call", "Interview", "Rejected","Backed out", "No response","Technical","In Review", "Offer","Joined", "Sourced", "Hired"]
                                 current_stage = selected_candidate.get('Stage', 'Call Stage')
                                 stage = st.selectbox(
                                     "Stage",
