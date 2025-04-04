@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 from datetime import datetime
+import re
 
 # Define the column mapping:
 # Keys are the original column names in the Calendly files;
@@ -182,7 +183,7 @@ def process_L_N_C(india_dfs_calendly, india_dfs_L_N):
 
     # no-show: duplicate from no_show if exists; if not, leave as is
     if "no_show" in merged_df.columns:
-        merged_df["no-show"] = merged_df["no_show"]
+        merged_df["no-show"] = merged_df["no-show"]
     else:
         merged_df["no-show"] = pd.NA
 
@@ -205,4 +206,17 @@ def process_L_N_C(india_dfs_calendly, india_dfs_L_N):
     print('process_L_N_C Completed')
     return merged_df_L_N_C
 
+def extract_parentheses(text):
+    if pd.isna(text):
+        return ('', '')
 
+    # Convert to string and handle any float values
+    text = str(text).strip()
+
+    match = re.search(r'\((.*?)\)', text)
+    if match:
+        main_text = text.split('(')[0].strip()
+        parentheses_text = match.group(1).strip()
+        return (main_text, parentheses_text)
+    else:
+        return (text, '')
