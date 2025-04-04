@@ -28,6 +28,7 @@ Linkedin_India = {
     'location': ['location', 'city', 'current location'],
     'current_title': ['current title', 'job title', 'position title'],
     'current_company': ['current company', 'company', 'employer'],
+    'annual_salary': ['annual_salary', 'salary', 'ctc', 'current ctc'],
     'email': ['email', 'email address', 'email id'],
     'phone': ['phone', 'mobile', 'contact', 'phone number'],
     'profile_url': ['profile url', 'linkedin url', 'profile link'],

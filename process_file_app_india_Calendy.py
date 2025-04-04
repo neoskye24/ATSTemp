@@ -19,7 +19,7 @@ def preprocess_calendly(filepath, country_name="India"):
         "Invitee Email": "email",
         "Start Date & Time": "Start Date & Time",  # kept as is
         "Response 1": "Profile",
-        "Response 2": "salary",
+        "Response 2": "annual_salary",
         "Response 3": "notice_period",
         "Response 4": 'location',
         "Response 5": "position",
@@ -29,14 +29,13 @@ def preprocess_calendly(filepath, country_name="India"):
         "Meeting Notes": "meeting_notes"
     }
     try:
-        # Load the file based on extension
-        if filepath.endswith('.xlsx'):
-            df = pd.read_excel(filepath)
-        else:
-            df = pd.read_csv(filepath)
+
+        df = pd.read_csv(filepath)
 
         # Convert relevant columns to string type
-        string_columns = ['name', 'email', 'phone', 'location', 'position', 'source']
+        string_columns = [
+            'name', 'email', 'phone', 'location', 'position', 'source'
+        ]
         for col in string_columns:
             if col in df.columns:
                 df[col] = df[col].astype(str)
@@ -54,11 +53,17 @@ def preprocess_calendly(filepath, country_name="India"):
         if 'Start Date & Time' in df.columns:
             try:
                 # Define potential date formats; added a format for "YYYY-MM-DD hh:mm am/pm"
-                date_formats = ['%Y-%m-%d %I:%M %p', '%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y', '%B %d, %Y']
+                date_formats = [
+                    '%Y-%m-%d %I:%M %p', '%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y',
+                    '%B %d, %Y'
+                ]
                 for date_format in date_formats:
                     try:
-                        df['Start Date & Time'] = pd.to_datetime(df['Start Date & Time'], format=date_format)
-                        print(f"  Successfully parsed dates using format: {date_format}")
+                        df['Start Date & Time'] = pd.to_datetime(
+                            df['Start Date & Time'], format=date_format)
+                        print(
+                            f"  Successfully parsed dates using format: {date_format}"
+                        )
                         break
                     except Exception as e:
                         continue
@@ -77,23 +82,26 @@ def preprocess_calendly(filepath, country_name="India"):
         return df
 
     except Exception as e:
-        print(f"Error processing Calendly {country_name} file ({filepath}): {e}")
+        print(
+            f"Error processing Calendly {country_name} file ({filepath}): {e}")
         return None
+
 
 def process_calendly_india(calendly_files):
     print('process_calendly_india Started')
     calendly_dfs = []
     for file in calendly_files:
-            df = preprocess_calendly(file)
-            # df.head()
-            # Optionally add a source column for later identification
-            df['source'] = 'Calendly_India'
-            calendly_dfs.append(df)
+        df = preprocess_calendly(file)
+        # df.head()
+        # Optionally add a source column for later identification
+        df['source'] = 'Calendly_India'
+        calendly_dfs.append(df)
 
     # Merge all processed DataFrames into one
     merged_df_calendly = pd.concat(calendly_dfs, ignore_index=True)
     print('process_calendly_india Completed')
     return merged_df_calendly
+
 
 # Optional: Save the merged result to a new Excel file
 # merged_df.to_excel("merged_calendly_india_data.xlsx", index=False)
@@ -101,6 +109,7 @@ def process_calendly_india(calendly_files):
 # --- Define mapping dictionaries ---
 
 #-----------------------------------------------------------------------------------------------------------------#
+
 
 def standardize_columns(df, mapping):
     """
@@ -119,42 +128,46 @@ def standardize_columns(df, mapping):
     return df.rename(columns=rename_dict)
 
 
-
 calendly_mapping = {
     'name': ['name', 'full name'],
     'email': ['email', 'email address'],
     'phone': ['phone', 'mobile', 'contact'],
     'date': ['date', 'appointment date'],
     'profile_url': ['profile', 'profile url'],
-    'salary': ['salary'],  # Calendly data already has 'salary'
-    'notice_period': ['notice period/ availability to join', 'notice_period','Notice period/ Availability to join'],
+    'annual_salary': ['salary', 'annual_salary', 'ctc', 'current ctc'],
+    'notice_period': [
+        'notice period/ availability to join', 'notice_period',
+        'Notice period/ Availability to join'
+    ],
     'position': ['position', 'job title'],
     'no_show': ['no-show', 'no_show'],
-    'source': ['source','Source'],
+    'source': ['source', 'Source'],
     'location': ['location', 'city', 'current location'],
-    'meeting_notes':['Meeting Notes','Notes','meeting_notes'],
-    'status':['status','Status'],
-    'Date':['Start Date & Time','date']}
+    'meeting_notes': ['Meeting Notes', 'Notes', 'meeting_notes'],
+    'status': ['status', 'Status'],
+    'Date': ['Start Date & Time', 'date']
+}
 
 csv_mapping = {
     'name': ['name', 'full name'],
     'email': ['email', 'email address'],
     'phone': ['phone', 'mobile', 'contact'],
     'position': ['position', 'job title', 'role'],
-    'notice_period': ['notice_period','Notice period/ Availability to join'],
+    'notice_period': ['notice_period', 'Notice period/ Availability to join'],
     # For CSV, the column might be named "annual_salary". We'll standardize it to "salary"
-    'salary': ['annual_salary', 'salary', 'ctc'],
+    'annual_salary': ['annual_salary', 'salary', 'ctc'],
     'profile_url': ['profile_url', 'profile link'],
-    'status': ['status','Status'],
+    'status': ['status', 'Status'],
     'total_experience': ['total_experience', 'experience', 'exp'],
     'location': ['location', 'city', 'current location'],
     'current_title': ['current_title', 'job title', 'position title'],
     'current_company': ['current_company', 'company', 'employer'],
     'active_project': ['active_project', 'current project', 'project'],
     'source': ['source'],
-    'Date':['Start Date & Time','date'],
-    'meeting_notes':['Meeting Notes','Notes','meeting_notes']
+    'Date': ['Start Date & Time', 'date'],
+    'meeting_notes': ['Meeting Notes', 'Notes', 'meeting_notes']
 }
+
 
 def process_L_N_C(india_dfs_calendly, india_dfs_L_N):
     print('process_L_N_C Started')
@@ -193,7 +206,9 @@ def process_L_N_C(india_dfs_calendly, india_dfs_L_N):
             df_csv[col] = pd.NA
 
     # --- Combine the DataFrames ---
-    merged_df = pd.concat([df_csv,df_calendly], ignore_index=True)
+    merged_df = pd.concat([df_csv, df_calendly], ignore_index=True)
+
+    # --- Create additional columns based on equivalences ---
 
     # --- Create additional columns based on equivalences ---
     # annual_salary is same as salary: create a duplicate column
@@ -201,7 +216,6 @@ def process_L_N_C(india_dfs_calendly, india_dfs_L_N):
 
     # notice_period is same as declaration: duplicate that column
     merged_df["notice_period"] = merged_df["notice_period"]
-
 
     # no-show: duplicate from no_show if exists; if not, leave as is
     if "no_show" in merged_df.columns:
@@ -211,7 +225,8 @@ def process_L_N_C(india_dfs_calendly, india_dfs_L_N):
 
     # consent column: add as empty (or you can set a default value)
     merged_df["consent"] = pd.NA
-        # Only combine meeting notes when we have matching records from both sources
+
+    # Only combine meeting notes when we have matching records from both sources
     def merge_meeting_notes(row):
         if pd.notna(row['meeting_notes']) and 'LinkedIn' in str(row['source']):
             # Keep original LinkedIn notes without modification
@@ -222,9 +237,21 @@ def process_L_N_C(india_dfs_calendly, india_dfs_L_N):
 
     # --- Define the final column order ---
     final_order = [
-         "name", "email", "phone", "position", "status","location", "total_experience",
-        "annual_salary", "notice_period", "source",
-        "current_company", "no-show","meeting_notes", "salary", "Date",
+        "name",
+        "email",
+        "phone",
+        "position",
+        "status",
+        "location",
+        "total_experience",
+        "annual_salary",
+        "notice_period",
+        "source",
+        "current_company",
+        "no-show",
+        "meeting_notes",
+        "annual_salary",
+        "Date",
     ]
 
     # Ensure all columns exist in the merged dataframe
@@ -235,5 +262,3 @@ def process_L_N_C(india_dfs_calendly, india_dfs_L_N):
     merged_df_L_N_C = merged_df[final_order]
     print('process_L_N_C Completed')
     return merged_df_L_N_C
-
-
