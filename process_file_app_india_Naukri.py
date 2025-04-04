@@ -17,6 +17,12 @@ def read_file(file_path):
 def preprocess_naukri_data(df):
     """Preprocess Naukri data with standard column mappings"""
     print('preprocess_naukri_data Started')
+
+    # Define all possible columns for final dataframe
+    final_columns = ['Stage', 'name', 'email', 'phone', 'location', 'total_experience', 
+                    'annual_salary', 'notice_period', 'position', 'status', 'source',
+                    'meeting_notes', 'Date']
+
     # Remove existing source column if present
     if 'source' in df.columns:
         df = df.drop(columns=['source'])
@@ -32,7 +38,9 @@ def preprocess_naukri_data(df):
         'Current Location': 'location',
         'Current Title': 'position',
         'Annual Salary': 'annual_salary',
-        'Notice Period': 'notice_period'
+        'Notice period/ Availability to join':'notice_period',
+        'Job Title': 'position',
+        'Status':'status'
     }
 
     # Apply mappings where columns exist
@@ -41,6 +49,14 @@ def preprocess_naukri_data(df):
             df[new_col] = df[old_col]
             if old_col != new_col:  # Only drop if different name
                 df = df.drop(columns=[old_col])
+
+    # Ensure all final columns exist
+    for col in final_columns:
+        if col not in df.columns:
+            df[col] = pd.NA
+
+    # Reorder columns to match final format
+    df = df[final_columns]
 
     print('preprocess_naukri_data Completed')
     return df
