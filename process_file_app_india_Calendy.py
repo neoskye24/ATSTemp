@@ -183,11 +183,16 @@ def process_L_N_C(india_dfs_calendly, india_dfs_L_N):
 
     # --- Create additional columns based on equivalences ---
     # annual_salary is same as salary: create a duplicate column
-    merged_df["annual_salary"] = merged_df["salary"]
+    try:
+        merged_df["annual_salary"] = merged_df["salary"]
+    except:
+        merged_df["salary"] = pd.NA
 
     # notice_period is same as declaration: duplicate that column
-    merged_df["notice_period"] = merged_df["notice_period"]
-
+    try:
+        merged_df["notice_period"] = merged_df["notice_period"]
+    except:
+        merged_df["notice_period"] = pd.NA
 
     # no-show: duplicate from no_show if exists; if not, leave as is
     if "no_show" in merged_df.columns:
@@ -210,7 +215,7 @@ def process_L_N_C(india_dfs_calendly, india_dfs_L_N):
     final_order = [
          "name", "email", "phone", "position", "status","location", "total_experience",
         "annual_salary", "notice_period", "source",
-        "current_company", "no-show","meeting_notes", "annual_salary", "Date",
+        "current_company", "no-show","meeting_notes", "Date",
     ]
 
     # Ensure all columns exist in the merged dataframe
