@@ -1634,8 +1634,14 @@ def main():
                                         df.loc[selected_index, 'Stage'] = stage
                                         df.loc[selected_index,
                                                'source'] = source
-                                        df.loc[selected_index,
-                                               'meeting_notes'] = notes
+                                        # Append new meeting notes with timestamp
+                                        existing_notes = str(df.loc[selected_index, 'meeting_notes'])
+                                        if pd.isna(existing_notes) or existing_notes.lower() == 'nan':
+                                            existing_notes = ''
+                                        current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+                                        if notes.strip():  # Only append if there are new notes
+                                            new_notes = f"{existing_notes}\n[{current_time}]: {notes}" if existing_notes else f"[{current_time}]: {notes}"
+                                            df.loc[selected_index, 'meeting_notes'] = new_notes
                                         df.loc[selected_index,
                                                'status'] = status
 
