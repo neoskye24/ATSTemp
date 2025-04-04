@@ -20,7 +20,7 @@ def preprocess_naukri_data(df):
 
     # Define all possible columns for final dataframe
     final_columns = ['Stage', 'name', 'email', 'phone', 'location', 'total_experience', 
-                    'annual_salary', 'notice_period', 'position', 'status', 'source',
+                    'annual_salary', 'Notice period/ Availability to join', 'position', 'status', 'source',
                     'meeting_notes', 'Date']
 
     # Remove existing source column if present
