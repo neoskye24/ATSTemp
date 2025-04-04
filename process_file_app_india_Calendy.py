@@ -125,7 +125,7 @@ calendly_mapping = {
     'position': ['position', 'job title'],
     'no_show': ['no-show', 'no_show'],
     'source': ['source','Source'],
-    'meeting_notes':['Meeting Notes'],
+    'meeting_notes':['Meeting Notes','Notes','meeting_notes'],
     'status':['status','Status'],
     'Date':['Start Date & Time','date']}
 
@@ -145,7 +145,8 @@ csv_mapping = {
     'current_company': ['current_company', 'company', 'employer'],
     'active_project': ['active_project', 'current project', 'project'],
     'source': ['source'],
-    'Date':['Start Date & Time','date']
+    'Date':['Start Date & Time','date'],
+    'meeting_notes':['Meeting Notes','Notes','meeting_notes']
 }
 
 def process_L_N_C(india_dfs_calendly, india_dfs_L_N):

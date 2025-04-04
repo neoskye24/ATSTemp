@@ -282,7 +282,7 @@ def main():
                             'Stage', 'name', 'email', 'phone', 'location',
                             'total_experience', 'annual_salary',
                             'notice_period', 'position', 'status', 'source',
-                            'Meeting Notes', 'Date'
+                            'meeting_notes', 'Date'
                         ]
 
                         # Keep only India-specific columns
@@ -1635,7 +1635,7 @@ def main():
                                         df.loc[selected_index,
                                                'source'] = source
                                         df.loc[selected_index,
-                                               'Meeting Notes'] = notes
+                                               'meeting_notes'] = notes
                                         df.loc[selected_index,
                                                'status'] = status
 
