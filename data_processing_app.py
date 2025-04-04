@@ -724,13 +724,33 @@ def main():
                         if len(existing_record) > 0:
                             # Update existing record
                             idx = existing_record.index[0]
+                            # Preserve existing meeting notes
+                            existing_notes = str(us_df.loc[idx, 'Meeting Notes'])
+                            if pd.isna(existing_notes) or existing_notes.lower() == 'nan':
+                                existing_notes = ''
+
+                            # Update all columns except meeting notes
                             for col in us_df.columns:
-                                if pd.notna(row[col]
-                                            ):  # Only update non-null values
+                                if col != 'Meeting Notes' and pd.notna(row[col]):
                                     us_df.loc[idx, col] = row[col]
+
+                            # Handle meeting notes separately - append new notes if present
+                            new_notes = str(row.get('Meeting Notes', ''))
+                            if pd.notna(new_notes) and new_notes.strip() and new_notes.lower() != 'nan':
+                                current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+                                if existing_notes.strip():
+                                    combined_notes = f"{existing_notes}\n[{current_time}]: {new_notes}"
+                                else:
+                                    combined_notes = f"[{current_time}]: {new_notes}"
+                                us_df.loc[idx, 'Meeting Notes'] = combined_notes
+                            else:
+                                us_df.loc[idx, 'Meeting Notes'] = existing_notes
                             updates += 1
                         else:
                             # Add new record
+                            if pd.notna(row.get('Meeting Notes')):
+                                current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+                                row['Meeting Notes'] = f"[{current_time}]: {row['Meeting Notes']}"
                             us_df.loc[len(us_df)] = row
                             additions += 1
 
@@ -1048,13 +1068,33 @@ def main():
                         if len(existing_record) > 0:
                             # Update existing record
                             idx = existing_record.index[0]
+                            # Preserve existing meeting notes
+                            existing_notes = str(india_df.loc[idx, 'meeting_notes'])
+                            if pd.isna(existing_notes) or existing_notes.lower() == 'nan':
+                                existing_notes = ''
+
+                            # Update all columns except meeting notes
                             for col in india_df.columns:
-                                if pd.notna(row[col]
-                                            ):  # Only update non-null values
+                                if col != 'meeting_notes' and pd.notna(row[col]):
                                     india_df.loc[idx, col] = row[col]
+
+                            # Handle meeting notes separately - append new notes if present
+                            new_notes = str(row.get('meeting_notes', ''))
+                            if pd.notna(new_notes) and new_notes.strip() and new_notes.lower() != 'nan':
+                                current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+                                if existing_notes.strip():
+                                    combined_notes = f"{existing_notes}\n[{current_time}]: {new_notes}"
+                                else:
+                                    combined_notes = f"[{current_time}]: {new_notes}"
+                                india_df.loc[idx, 'meeting_notes'] = combined_notes
+                            else:
+                                india_df.loc[idx, 'meeting_notes'] = existing_notes
                             updates += 1
                         else:
                             # Add new record
+                            if pd.notna(row.get('meeting_notes')):
+                                current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+                                row['meeting_notes'] = f"[{current_time}]: {row['meeting_notes']}"
                             india_df.loc[len(india_df)] = row
                             additions += 1
 
@@ -1558,8 +1598,7 @@ def main():
                                     "Pending Hire", "Sent Offer", "Hired",
                                     "Joined"
                                 ]
-                                current_stage = selected_candidate.get(
-                                    'Stage', 'Call Stage')
+                                current_stage = selected_candidate.get('Stage', 'Call Stage')
                                 stage = st.selectbox(
                                     "Stage",
                                     options=stage_options,
@@ -1635,16 +1674,20 @@ def main():
                                         df.loc[selected_index,
                                                'source'] = source
                                         # Preserve existing notes and append new ones
-                                        existing_notes = str(df.loc[selected_index, 'meeting_notes'])
-                                        if pd.isna(existing_notes) or existing_notes.lower() == 'nan':
+                                        existing_notes = str(
+                                            df.loc[selected_index, 'meeting_notes'])
+                                        if pd.isna(existing_notes) or existing_notes.lower(
+                                        ) == 'nan':
                                             existing_notes = ''
-                                        current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+                                        current_time = datetime.now().strftime(
+                                            '%Y-%m-%d %H:%M')
                                         if notes.strip():  # Only append if there are new notes
                                             if existing_notes.strip():  # If there are existing notes
                                                 new_notes = f"{existing_notes}\n[{current_time}]: {notes}"
                                             else:
                                                 new_notes = f"[{current_time}]: {notes}"
-                                            df.loc[selected_index, 'meeting_notes'] = new_notes
+                                            df.loc[selected_index,
+                                                   'meeting_notes'] = new_notes
                                         df.loc[selected_index,
                                                'status'] = status
 
