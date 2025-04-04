@@ -38,7 +38,7 @@ def preprocess_calendly(filepath, country_name="India"):
 
         # Rename columns according to the mapping
         df.rename(columns=column_mapping, inplace=True)
-
+        
         # Remove existing source column if present
         if 'source' in df.columns:
             df = df.drop(columns=['source'])
@@ -66,7 +66,7 @@ def preprocess_calendly(filepath, country_name="India"):
         if all(col in df.columns for col in ['Nname', 'email', 'phone']):
             print("\nCalendly data sample (first 3 rows):")
             print(df[['Nname', 'email', 'phone']].head(3))
-
+    
         print('preprocess_calendly for India Completed')
 
         return df
@@ -84,7 +84,7 @@ def process_calendly_india(calendly_files):
             # Optionally add a source column for later identification
             df['source'] = 'Calendly_India'
             calendly_dfs.append(df)
-
+    
     # Merge all processed DataFrames into one
     merged_df_calendly = pd.concat(calendly_dfs, ignore_index=True)
     print('process_calendly_india Completed')
@@ -148,61 +148,61 @@ csv_mapping = {
 def process_L_N_C(india_dfs_calendly, india_dfs_L_N):
     print('process_L_N_C Started')
 
-
+    
     # --- Standardize the column names ---
     df_calendly = standardize_columns(india_dfs_calendly, calendly_mapping)
     df_csv = standardize_columns(india_dfs_L_N, csv_mapping)
-
+    
     # --- Remove duplicate columns if any ---
     df_calendly = df_calendly.loc[:, ~df_calendly.columns.duplicated()]
     df_csv = df_csv.loc[:, ~df_csv.columns.duplicated()]
-
-
+    
+    
     # --- Align the DataFrames ---
     # Create the union of all columns from both DataFrames
     all_cols = set(df_calendly.columns).union(set(df_csv.columns))
-
+    
     # Add missing columns to each DataFrame with NaN values
     for col in all_cols:
         if col not in df_calendly.columns:
             df_calendly[col] = pd.NA
         if col not in df_csv.columns:
             df_csv[col] = pd.NA
-
+    
     # --- Combine the DataFrames ---
     merged_df = pd.concat([df_csv,df_calendly], ignore_index=True)
 
     # --- Create additional columns based on equivalences ---
     # annual_salary is same as salary: create a duplicate column
     merged_df["annual_salary"] = merged_df["salary"]
-
+    
     # notice_period is same as declaration: duplicate that column
     merged_df["notice_period"] = merged_df["notice_period"]
-
-
+    
+    
     # no-show: duplicate from no_show if exists; if not, leave as is
     if "no_show" in merged_df.columns:
         merged_df["no-show"] = merged_df["no_show"]
     else:
         merged_df["no-show"] = pd.NA
-
+    
     # consent column: add as empty (or you can set a default value)
     merged_df["consent"] = pd.NA
-
+    
     # --- Define the final column order ---
     final_order = [
          "name", "email", "phone", "position", "status","location", "total_experience",
         "annual_salary", "notice_period", "source",
         "current_company", "no-show","meeting_notes", "salary", "Date",
     ]
-
+    
     # Ensure all columns exist in the merged dataframe
     for col in final_order:
         if col not in merged_df.columns:
             merged_df[col] = pd.NA
-
+    
     merged_df_L_N_C = merged_df[final_order]
     print('process_L_N_C Completed')
     return merged_df_L_N_C
-
+    
 
