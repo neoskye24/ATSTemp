@@ -209,9 +209,13 @@ def process_L_N_C(india_dfs_calendly, india_dfs_L_N):
 def extract_parentheses(text):
     if pd.isna(text):
         return ('', '')
-
-    # Convert to string and handle any float values
-    text = str(text).strip()
+    
+    # Convert any numeric values to string first
+    if isinstance(text, (int, float)):
+        text = str(text)
+    
+    # Now strip the string
+    text = text.strip()
 
     match = re.search(r'\((.*?)\)', text)
     if match:
