@@ -21,16 +21,19 @@ def extract_parentheses(text):
     print('extract_parentheses Started')
     if pd.isna(text):
         return ('', '')
-
-    match = re.search(r'\((.*?)\)', str(text))
+    
+    # Convert any numeric values to string first
+    text = str(text).strip()
+    
+    match = re.search(r'\((.*?)\)', text)
     if match:
-        main_text = str(text).split('(')[0].strip()
+        main_text = text.split('(')[0].strip()
         parentheses_text = match.group(1).strip()
         print('extract_parentheses Completed')
         return (main_text, parentheses_text)
     else:
         print('extract_parentheses Completed')
-        return (str(text), '')
+        return (text, '')
 
 
 def preprocess_linkedin_india(df):
