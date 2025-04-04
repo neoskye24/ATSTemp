@@ -40,7 +40,7 @@ def load_or_create_data():
     return pd.DataFrame(columns=[
         'Stage', 'name', 'email', 'phone', 'location', 'experience',
         'position', 'status', 'profile', 'salary', 'declaration', 'source',
-        'file_source', 'date'
+        'file_source', 'date', 'Meeting Notes'
     ])
 
 
