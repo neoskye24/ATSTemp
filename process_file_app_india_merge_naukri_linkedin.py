@@ -15,9 +15,7 @@ Naukri_India = {
     'annual_salary': ['annual salary', 'salary', 'ctc', 'current ctc'],
     'status': ['status', 'Status'],
     'meeting_notes': ['Meeting Notes', 'Notes', 'meeting_notes'],
-    'notice_period': [
-        'notice period/ availability to join', 'notice_period',
-        'Notice period/ Availability to join'
+    'notice_period': [ 'notice period/ availability to join', 'notice_period','Notice period/ Availability to join'
     ]
 }
 
@@ -100,11 +98,4 @@ def process_linkedin_naukri(merged_df_naukri, merged_df_linkedin):
                               sort=False)
     print('Merging the Naukri and Linkedin Data Completed')
     return merged_df_L_N
-    # # Optionally, save the merged DataFrame to a file
-    # output_file = "merged_naukri_linkedin_data_new.csv"
-    # merged_df.to_csv(output_file, index=False)
-    # print(f"Merged data saved to {output_file}")
-
-    # # For debugging: print out the standardized column names
-    # print("Standardized columns in Naukri data:", df_naukri.columns.tolist())
-    # print("Standardized columns in LinkedIn data:", df_linkedin.columns.tolist())
+ 

@@ -73,9 +73,9 @@ def preprocess_calendly(filepath, country_name="India"):
                 print(f"  Warning: Could not parse date column - {e}")
 
         # Print sample data (first 3 rows) for verification
-        if all(col in df.columns for col in ['Nname', 'email', 'phone']):
+        if all(col in df.columns for col in ['name', 'email', 'phone']):
             print("\nCalendly data sample (first 3 rows):")
-            print(df[['Nname', 'email', 'phone']].head(3))
+            print(df[['name', 'email', 'phone']].head(3))
 
         print('preprocess_calendly for India Completed')
 
@@ -135,10 +135,7 @@ calendly_mapping = {
     'date': ['date', 'appointment date'],
     'profile_url': ['profile', 'profile url'],
     'annual_salary': ['salary', 'annual_salary', 'ctc', 'current ctc'],
-    'notice_period': [
-        'notice period/ availability to join', 'notice_period',
-        'Notice period/ Availability to join'
-    ],
+    'notice_period': ['notice period/ availability to join', 'notice_period','Notice period/ Availability to join'],
     'position': ['position', 'job title'],
     'no_show': ['no-show', 'no_show'],
     'source': ['source', 'Source'],
@@ -153,7 +150,7 @@ csv_mapping = {
     'email': ['email', 'email address'],
     'phone': ['phone', 'mobile', 'contact'],
     'position': ['position', 'job title', 'role'],
-    'notice_period': ['notice_period', 'Notice period/ Availability to join'],
+    'notice_period': ['notice period/ availability to join', 'notice_period','Notice period/ Availability to join'],
     # For CSV, the column might be named "annual_salary". We'll standardize it to "salary"
     'annual_salary': ['annual_salary', 'salary', 'ctc'],
     'profile_url': ['profile_url', 'profile link'],
