@@ -31,7 +31,7 @@ def preprocess_calendly(filepath, country_name="India"):
     try:
         # Load the file based on extension
         if filepath.endswith('.xlsx'):
-            df = pd.read_excel(filepath)
+            df = pd.read_excel(filepath,header=1)
         else:
             df = pd.read_csv(filepath)
 
